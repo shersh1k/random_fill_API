@@ -1,19 +1,25 @@
-import * as express from "express";
-import * as http from "http";
-// import * as socketIo from "socket.io";
+import * as express from 'express';
+import * as HTTP from 'http';
+import { Server } from 'socket.io';
 
-var io = require('socket.io')(http);
 const app = express();
+const http = HTTP.createServer(app);
+const io = new Server(http);
+const port = process.env.PORT || 4000;
+
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
-    console.log('________________________________________________________________' + __dirname)
-    res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html');
 });
 
-io.on('connection', (socket: any) => {
-    console.log('a user connected');
+io.on('connection', function (socket) {
+//   socket.broadcast.emit('hi');
+  socket.on('chat message', function (msg: string) {
+    io.emit('chat message', msg);
+  });
 });
 
-http.createServer(app).listen(4000, () => {
-    console.log('listening on *:4000');
+http.listen(port, () => {
+  console.log(`listening on *:${port}`);
 });
