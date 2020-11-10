@@ -1,28 +1,25 @@
 import * as express from 'express';
 import * as HTTP from 'http';
-import * as cors from "cors";
-import { Server, Socket } from 'socket.io';
+import * as redis from "redis";
+import { Server } from 'socket.io';
 
-const app = express();
-const http = HTTP.createServer(app);
-const io = new Server(http, { path: '/socket' });
+import { ioPath,  port, REDIS_URL } from './config';
 
-const port = process.env.PORT || 4000;
+import { appLogic } from "./app";
+import { redisLogic } from "./redis";
+import { ioLogic } from "./socketIO";
+import { mongoDBLogic } from './mongoDB';
 
-app.use(express.static(__dirname + '/public'));
+export const app = express();
+export const http = HTTP.createServer(app);
+export const redisClient = redis.createClient(REDIS_URL)
+export const io = new Server(http, { path: ioPath });
 
-app.use(cors({ credentials: true }));
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
-io.on('connection', (socket: Socket) => {
-  socket.on('chat message', function (msg: string) {
-    io.emit('chat message', msg);
-  });
-});
+appLogic();
+mongoDBLogic();
+redisLogic();
+ioLogic();
 
 http.listen(port, () => {
-  console.log(`listening on *:${port}`);
+  console.log(`listening on: ${port}`);
 });
