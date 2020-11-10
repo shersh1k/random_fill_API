@@ -1,57 +1,72 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      body {
-        font: 13px Helvetica, Arial;
-      }
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      form {
-        background: #000;
-        padding: 3px;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }
+    body {
+      font: 13px Helvetica, Arial;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-      form input {
-        border: 0;
-        padding: 10px;
-        width: 90%;
-        margin-right: 0.5%;
-      }
+    #root {
+      width: 500px;
+      height: 500px;
+      border: 1px solid grey;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-      form button {
-        width: 9%;
-        background: rgb(130, 224, 255);
-        border: none;
-        padding: 10px;
-      }
+    form {
+      background: #000;
+      padding: 3px;
+      bottom: 0;
+      width: 100%;
+    }
 
-      #messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: 0.5%;
+    }
 
-      #messages li {
-        padding: 5px 10px;
-      }
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
 
-      #messages li:nth-child(odd) {
-        background: #eee;
-      }
-    </style>
-  </head>
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
 
-  <body>
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
     <ul id="messages"></ul>
     <form action=""><input id="m" autocomplete="off" /><button>Send</button></form>
     <script src="/socket.io.js"></script>
@@ -70,5 +85,7 @@
         });
       });
     </script>
-  </body>
+  </div>
+</body>
+
 </html>
