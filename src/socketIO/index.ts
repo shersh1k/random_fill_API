@@ -2,9 +2,17 @@ import { Socket } from 'socket.io';
 import { io } from "..";
 import * as cookie from "cookie";
 
+interface iUserSockets {
+    [mail: string]: {
+        name: string;
+        email: string;
+        socket: Socket;
+    }
+}
+
 export function ioLogic() {
     // const userSockets: { email: string, name: string, socket: Socket }[] = []
-    const userSockets: any/* { [string]: string } */ = {}
+    const userSockets: iUserSockets/* { [string]: string } */ = {}
     io.on('connection', (socket: Socket) => {
         socket.on('login', async (user: iUser) => {
             userSockets[user.mail] = { email: user.mail, name: user.name, socket }
@@ -18,7 +26,8 @@ export function ioLogic() {
             //         }))
             //     ])
             // });
-            socket.emit('login', Object.values(userSockets).map((item: any) => ({ name: item.name, mail: item.email })));
+            const usersOnline = Object.values(userSockets).map((item) => ({ name: item.name, mail: item.email }))
+            socket.emit('login', usersOnline);
             socket.broadcast.emit('newUser', user);
         })
 
@@ -42,11 +51,15 @@ export function ioLogic() {
         });
 
         socket.on('letsPlay', (mailTo: string) => {
-            const headers: any = socket.handshake.headers;
-            if (headers.cookie) {
-                const cookies = cookie.parse(headers.cookie);
-                const mailFrom = cookies.UserEmail;
-                socket.broadcast.to((userSockets[mailTo].socket as Socket).id).emit('letsPlay', mailFrom);
+            try {
+                const headers: any = socket.handshake.headers;
+                if (headers.cookie) {
+                    const cookies = cookie.parse(headers.cookie);
+                    const mailFrom = cookies.UserEmail;
+                    socket.broadcast.to((userSockets[mailTo].socket as Socket).id).emit('letsPlay', mailFrom);
+                }
+            } catch (error) {
+                socket.emit('userLostConnection')
             }
         })
     });
